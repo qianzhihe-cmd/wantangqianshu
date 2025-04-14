@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>万糖千书</title>
+    <style>
+        /* 原有样式保持不变 */
+        body {
+            background: #14e3e0;
+            background: linear-gradient(90deg, rgba(20, 227, 224, 1) 0%, rgba(58, 222, 126, 0.99) 50%, rgba(98, 43, 237, 1) 100%);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            margin: 0 !important;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .header {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+            width: 100vw;
+            margin-left: -50vw; 
+            left: 50%;
+            position:relative;
+            overflow:hidden;
+            padding: 80px 20px;
+            background: rgba(221, 145, 145, 0.442);
+            text-align: center;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('header-bg.jpg') center/cover;
+            z-index: -1;
+            filter: blur(3px);
+        }
+        h1 {
+            font-size: 3.5rem;
+            letter-spacing: 2px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+        @keyframes textGlow {
+            from { text-shadow: 0 0 10px rgba(50, 223, 45, 0.825); }
+            to { text-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        }
+        .container{
+            max-width: none !important;
+            padding: 0 !important;
+        }
+        @media (min-width: 1920px){
+            .header::after{
+                filter: blur(3px) brightness(1.1);
+            }
+        }
+
+        .btn-grad {
+            background-image: linear-gradient(to right, #B3FFAB 0%, #12FFF7 51%, #B3FFAB 100%);
+            margin: 10px;
+            padding: 15px 45px;
+            text-align: center;
+            text-transform: uppercase;
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: rgba(210, 205, 205, 0.921);            
+            box-shadow: 0 0 20px #e7e6e6ea;
+            border-radius: 10px;
+            display: block;
+            cursor: pointer;
+        }
+        .btn-grad:hover {
+            background-position: right center;
+            color: #000000;
+        }
+        .hidden-text {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease;
+            max-width: 600px;
+            padding: 20px;
+            background: rgba(229, 227, 227, 0.938);
+            border-radius: 8px;
+        }
+        .show-text {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .content {
+            backdrop-filter: blur(10px);
+            width: 90%;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(127, 203, 236, 0.158);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.195);
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background: #333;
+            color: white;
+        }
+
+        /* 轮播相关新增样式 */
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 0;
+            min-height: 100%;
+            box-sizing: border-box;
+        }
+
+        .slide {
+            position: absolute;
+            z-index: 1; /* 确保图片在底层 */
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            object-fit: cover;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        /* 导航箭头 */
+        .nav-arrow {
+            z-index: 2; /* 确保箭头在顶层 */
+            /* 原有其他样式不变 */
+            pointer-events: auto;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: white;
+            font-size: 2em;
+            background: rgba(42, 91, 224, 0.3);
+            padding: 10px 15px;
+            border-radius: 50%;
+            transition: 0.3s;
+            user-select: none;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(0,0,0,0.7);
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        /* 指示点 */
+        .dots-container {
+            z-index: 2; /* 确保指示点在顶层 */
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: rgba(255,255,255,1);
+        }
+
+              /* 新增分类相册样式 */
+        .category-nav {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .gallery-container {
+            display: grid;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+        }
+
+        .category-gallery {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .category-gallery.active {
+            display: grid;
+        }
+
+        .photo-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .download-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            padding: 8px 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            }
+
+        .download-btn:hover {
+            background: rgba(0,0,0,0.9);
+        }
+
+        .upload-panel {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>万糖基站</h1>
+        <p>记录生活与学习</p>
+    </div>
+
+    <button class="btn-grad" id="showTextBtn">点击显示隐藏内容</button>
+    <div id="textContainer" class="hidden-text"></div>
+    <script>
+        document.getElementById('showTextBtn').addEventListener('click', function() {
+            const textContainer = document.getElementById('textContainer');
+            textContainer.textContent = "✨ ✨ ✨欢迎访问✨ ✨ ✨";
+            textContainer.classList.toggle('show-text');
+        });
+    </script>
+
+    <div class="content">
+
+
+        <!-- 新增分类导航和相册结构 -->
+    <div class="category-nav">
+        <button class="btn-grad active" data-category="all">全部照片</button>
+        <button class="btn-grad" data-category="travel">旅行记忆</button>
+        <button class="btn-grad" data-category="study">学习笔记</button>
+        <button class="btn-grad" data-category="life">生活瞬间</button>
+    </div>
+
+    <div class="gallery-container">
+        <!-- 各分类相册 -->
+        <div class="category-gallery active" id="all"></div>
+        <div class="category-gallery" id="travel"></div>
+        <div class="category-gallery" id="study"></div>
+        <div class="category-gallery" id="life"></div>
+    </div>
+
+        <!-- 新增上传面板 -->
+    <div class="upload-panel">
+        <h3>上传照片</h3>
+        <select id="categorySelect">
+            <option value="travel">旅行记忆</option>
+            <option value="study">学习笔记</option>
+            <option value="life">生活瞬间</option>
+        </select>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <button class="btn-grad" id="uploadBtn">上传</button>
+    </div>
+
+        <div class="slideshow-container">
+            <!-- 新增导航元素 -->
+            <div class="nav-arrow prev">❮</div>
+            <div class="nav-arrow next">❯</div>
+            <div class="dots-container"></div>
+            
+            <!-- 轮播图片 -->
+            <img src="image\slide1.png" class="slide active">
+            <img src="image\slide2.jpg" class="slide">
+            <img src="image\slide3.jpg" class="slide">
+       
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM加载完成'); // 调试输出
+
+            const slides = document.querySelectorAll('.slide');
+            const dotsContainer = document.querySelector('.dots-container');
+            const prevBtn = document.querySelector('.prev');
+            const nextBtn = document.querySelector('.next');
+
+            console.log('元素获取情况：', {
+                slides,
+                dotsContainer,
+                prevBtn,
+                nextBtn
+            }); // 验证元素是否选中
+            let currentIndex = 0;
+            let autoSlideInterval;    
+
+            // 创建指示点
+            function createDots() {
+                console.log('创建指示点');
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    if (index === currentIndex) dot.classList.add('active');
+                    dot.addEventListener('click', () => {
+                        console.log('点击指示点：', index);
+                        goToSlide(index);
+            });
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+            // 切换逻辑增强
+    function goToSlide(index) {
+        console.log('切换到索引：', index);
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+        
+        slides[currentIndex].classList.remove('active');
+        dotsContainer.children[currentIndex].classList.remove('active');
+        
+        currentIndex = index;
+        
+        slides[currentIndex].classList.add('active');
+        dotsContainer.children[currentIndex].classList.add('active');
+        
+        resetAutoSlide();
+    }
+
+            // 自动轮播重置
+    function resetAutoSlide() {
+        console.log('重置自动轮播');
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = setInterval(() => {
+            console.log('自动切换到下一张');
+            goToSlide(currentIndex + 1);
+        }, 3000);
+    }
+
+            // 初始化点击事件
+    function init() {
+        try {
+            console.log('初始化开始');
+            createDots();
+            
+            prevBtn.addEventListener('click', () => {
+                console.log('点击上一页按钮');
+                goToSlide(currentIndex - 1);
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                console.log('点击下一页按钮');
+                goToSlide(currentIndex + 1);
+            });
+            
+            resetAutoSlide();
+            console.log('初始化完成');
+        } catch (error) {
+            console.error('初始化错误：', error);
+        }
+    }
+
+    init();
+        });
+    </script>
+
+    <script>
+        // 分类导航功能
+document.querySelectorAll('.category-nav button').forEach(button => {
+    button.addEventListener('click', function() {
+        // 切换激活状态
+        document.querySelectorAll('.category-nav button').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // 切换相册显示
+        const category = this.dataset.category;
+        document.querySelectorAll('.category-gallery').forEach(gallery => {
+            gallery.classList.remove('active');
+            if(gallery.id === category || category === 'all') {
+                gallery.classList.add('active');
+            }
+        });
+    });
+});
+
+// 照片上传功能
+document.getElementById('uploadBtn').addEventListener('click', function() {
+    const files = document.getElementById('fileInput').files;
+    const category = document.getElementById('categorySelect').value;
+    
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            createPhotoCard(e.target.result, file.name, category);
+            addToAllCategory(e.target.result, file.name); // 同时添加到"全部"分类
+        }
+        reader.readAsDataURL(file);
+    });
+});
+
+// 创建照片卡片函数
+function createPhotoCard(imgSrc, fileName, category) {
+    const gallery = document.getElementById(category);
+    
+    const photoCard = document.createElement('div');
+    photoCard.className = 'photo-card';
+    photoCard.innerHTML = `
+        <img src="${imgSrc}" alt="${fileName}">
+        <button class="download-btn" onclick="downloadPhoto('${imgSrc}', '${fileName}')">下载</button>
+    `;
+    
+    gallery.appendChild(photoCard);
+}
+
+// 添加到"全部"分类
+function addToAllCategory(imgSrc, fileName) {
+    const allGallery = document.getElementById('all');
+    createPhotoCard(imgSrc, fileName, 'all');
+}
+
+// 下载功能
+window.downloadPhoto = function(dataUrl, fileName) {
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// 初始化示例照片
+createPhotoCard('image/slide1.png', '示例图片1', 'travel');
+createPhotoCard('image/slide2.jpg', '示例图片2', 'study');
+createPhotoCard('image/slide3.jpg', '示例图片3', 'life');
+</Script>
+
+
+<div class="footer">
+    <p>© 2024 版权所有</p>
+</div>
+</body>
+</html>
